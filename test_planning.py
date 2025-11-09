@@ -70,7 +70,7 @@ class Scenario:
     @property
     def people(self):
         return list(set([g.who for g in self.gardes]))
-    
+
     @property
     def nb_days_by_people(self):
         days_by_people = {}
@@ -92,6 +92,14 @@ class Scenario:
                 return True
         return False
 
+    def check_consistency(self):
+        for g in self.gardes:
+            for other_g in self.gardes:
+                if other_g != g and other_g.dr.overlap(g.dr):
+                    print('ERROR overlap', g, other_g)
+                    return False
+        return True
+    
     def check_constraints(self, constraints):
         incompatibilites = {}
         for who in constraints:
@@ -114,8 +122,9 @@ class Scenario:
             new_gardes.append(other_garde)
         self.gardes = new_gardes
 
+
 def scenario_repr(s, year):
-    repr = ''
+    repr = ""
     for month in range(1, 12):
         m_str = MONTHS[month]
         m_start = date(year=year, month=month, day=1)
@@ -124,9 +133,12 @@ def scenario_repr(s, year):
         for g in s.gardes:
             if g.dr.start in m_dr:
                 month_gardes.append(g)
-        repr_gardes = ' - '.join([f'{g.who}({g.dr.start.day}-{g.dr.end.day})' for g in month_gardes])
-        repr += f'{m_str}: {repr_gardes}\r\n'
+        repr_gardes = " - ".join(
+            [f"{g.who}({g.dr.start.day}-{g.dr.end.day})" for g in month_gardes]
+        )
+        repr += f"{m_str}: {repr_gardes}\r\n"
     return repr
+
 
 class Garde:
     def __init__(self, who, dr):
@@ -258,20 +270,28 @@ if __name__ == "__main__":
 
     # check incompatibilites for each scenario
     for s in SCENARIOS:
-        
+
         print("-------------------------------------------------------------------")
         print(f"Scénario {s.name}")
         print("-------------------------------------------------------------------")
         print(scenario_repr(s, 2026))
-        
+
         nb_days_by_people = s.nb_days_by_people
-        print(f"Nombre de jours par personne: B({nb_days_by_people['B']}) C({nb_days_by_people['C']})")
+        print(
+            f"Nombre de jours par personne: B({nb_days_by_people['B']}) C({nb_days_by_people['C']})"
+        )
+        print()
+
+        print('Vérification de cohérence:')
+        s.check_consistency()
         print()
 
         incompatibilites = s.check_constraints(CONTRAINTES)
-        print(f"Incompatibilités: B({len(incompatibilites['B'])}) C({len(incompatibilites['C'])})")
+        print(
+            f"Incompatibilités: B({len(incompatibilites['B'])}) C({len(incompatibilites['C'])})"
+        )
         for who, incompats in incompatibilites.items():
             for incompat in incompats:
                 print(f"{who}: {incompat}")
-        
+
         print()
