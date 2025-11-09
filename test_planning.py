@@ -125,7 +125,7 @@ class Scenario:
 
 def scenario_repr(s, year):
     repr = ""
-    for month in range(1, 12):
+    for month in range(1, 12+1):
         m_str = MONTHS[month]
         m_start = date(year=year, month=month, day=1)
         m_dr = DR(m_start, m_start + relativedelta(months=1))
