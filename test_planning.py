@@ -197,62 +197,32 @@ if __name__ == "__main__":
     # Dates où on sait qu'on ne pourra pas garder les enfants
     CONTRAINTES = {
         "C": [
-            Constraint("WE Astreinte juillet", "2026-07-03", "2026-07-05"),
-            Constraint("WE Astreinte octobre", "2026-10-16", "2026-10-18"),
+            Constraint("Concert Olivia Rodrigo", "2027-04-23", "2027-04-23"),        
         ],
-        "B": [
-            Constraint("Concert", "2026-02-27", "2026-03-01"),
-            Constraint("Journee Accessibilité / Paris", "2026-04-14", "2026-04-14"),
-            Constraint("Mobco / Paris", "2026-06-09", "2026-06-11"),
-            Constraint("SOTM Monde / Paris", "2026-08-28", "2026-08-29"),
-            Constraint("GeoDataDays / Tours", "2026-09-16", "2026-09-17"),
-            Constraint(
-                "Rencontres du Réseau vélo et marche / Nancy",
-                "2026-09-30",
-                "2026-10-02",
-            ),
-            Constraint("Journees AGIR / Angers", "2026-10-06", "2026-10-08"),
-            Constraint("Smart City Expo / Barcelone", "2026-11-03", "2026-11-05"),
-            # Salon maires ?
+        "B": [            
+            Constraint("Urbest", "2027-01-13", "2027-01-14"),
+            Constraint("Mobco Saint-Étienne", "2027-03-31", "2027-04-01"),
+            # Constraint("Bac blanc", "2027-04-05", "2027-04-09"),       
+            Constraint("Lanzarote", "2027-04-24", "2027-05-01"),            
+            Constraint("UITP Hamburg", "2027-06-14", "2027-06-17"),
+            # Constraint("Bac français", "2027-06-15", "2027-06-15"),
+            # Constraint("Bac maths", "2027-06-21", "2027-06-21"),
+            # Constraint("Oral français", "2027-06-21", "2027-06-30"),
+            # Constraint("Brevet", "2027-06-24", "2027-06-28"),
+            # POLIS ?
+            # RVM ?
+            # GeoDataDays ?
         ],
     }
 
     # Divers scenarios de garde
     SCENARIOS = [
         create_simple_scenario(
-            "S1 / Année / Commence par B", "2026-01-02", "2026-12-19", "B", "C"
+            "S1 / Année / Commence par B", "2027-01-01", "2027-12-17", "B", "C"
         ),
         create_simple_scenario(
-            "S2 / Année / Commence par C", "2026-01-02", "2026-12-19", "C", "B"
-        ),
-        create_simple_scenario(
-            "S3 / Jusquà l'été / Commence par B", "2026-01-02", "2026-07-11", "B", "C"
-        ),
-        create_simple_scenario(
-            "S4 / Jusquà l'été / Commence par C", "2026-01-02", "2026-07-11", "C", "B"
-        ),
-        create_complex_scenario(
-            "S5",
-            [
-                ("2026-01-02", "2026-07-11", "C", "B"),
-                ("2026-08-28", "2026-12-20", "C", "B"),
-            ],
-        ),
-        # create_complex_scenario(
-        #     "S6",
-        #     [
-        #         ("2026-01-02", "2026-07-11", "C", "B"),
-        #         ("2026-08-28", "2026-12-20", "B", "C"),
-        #     ],
-        # ),
-        create_complex_scenario(
-            "S5 amelioré",
-            [
-                ("2026-01-02", "2026-07-11", "C", "B"),
-                ("2026-08-28", "2026-09-23", "C", "B"),
-                ("2026-09-25", "2026-12-20", "B", "C"),
-            ],
-        ),
+            "S2 / Année / Commence par C", "2027-01-01", "2027-12-17", "C", "B"
+        ),        
     ]
 
     # check if respective constraints overlap
@@ -274,7 +244,7 @@ if __name__ == "__main__":
         print("-------------------------------------------------------------------")
         print(f"Scénario {s.name}")
         print("-------------------------------------------------------------------")
-        print(scenario_repr(s, 2026))
+        print(scenario_repr(s, 2027))
 
         nb_days_by_people = s.nb_days_by_people
         print(
