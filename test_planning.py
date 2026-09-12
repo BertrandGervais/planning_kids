@@ -209,9 +209,12 @@ if __name__ == "__main__":
             # Constraint("Bac maths", "2027-06-21", "2027-06-21"),
             # Constraint("Oral français", "2027-06-21", "2027-06-30"),
             # Constraint("Brevet", "2027-06-24", "2027-06-28"),
+
+            # Automne 2026 : dates pas encore communiquées
             # POLIS ?
-            # RVM ?
+            # RVM ?            
             # GeoDataDays ?
+            # Walk21 (Attention, j'essaierai de prendre 2 semaines)
         ],
     }
 
