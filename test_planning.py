@@ -58,6 +58,17 @@ class DR:
     def overlap(self, dr):
         return self.start <= dr.end and dr.start <= self.end
 
+    def overlap_range(self, dr):
+        if not self.overlap(dr):
+            return None
+        start = max(self.start, dr.start)
+        end = min(self.end, dr.end)
+        return DR(start, end)
+
+    def days_list(self):
+        nb_days = (self.end - self.start).days + 1
+        return [self.start + timedelta(days=i) for i in range(nb_days)]
+
     def __repr__(self):
         return f"{date_repr(self.start)} - {date_repr(self.end)}"
 
@@ -92,6 +103,15 @@ class Scenario:
                 return True
         return False
 
+    def overlap_days_list(self, who, dr):
+        days = set()
+        for g in self.gardes:
+            if g.who == who:
+                r = g.dr.overlap_range(dr)
+                if r is not None:
+                    days.update(r.days_list())
+        return sorted(days)
+
     def check_consistency(self):
         for g in self.gardes:
             for other_g in self.gardes:
@@ -99,7 +119,7 @@ class Scenario:
                     print('ERROR overlap', g, other_g)
                     return False
         return True
-    
+
     def check_constraints(self, constraints):
         incompatibilites = {}
         for who in constraints:
@@ -107,8 +127,9 @@ class Scenario:
             incompatibilites[who] = []
         for who, c_list in constraints.items():
             for c in c_list:
-                if self.overlap(who, c.dr):
-                    incompatibilites[who].append(c)
+                days = self.overlap_days_list(who, c.dr)
+                if days:
+                    incompatibilites[who].append((c, days))
         return incompatibilites
 
     def __repr__(self):
@@ -263,8 +284,12 @@ if __name__ == "__main__":
         print(
             f"Incompatibilités: B({len(incompatibilites['B'])}) C({len(incompatibilites['C'])})"
         )
+        total_overlap_days = 0
         for who, incompats in incompatibilites.items():
-            for incompat in incompats:
-                print(f"{who}: {incompat}")
+            for incompat, days in incompats:
+                days_str = ", ".join(date_repr(d) for d in days)
+                print(f"{who}: {incompat} - overlap: {len(days)} jour(s) [{days_str}]")
+                total_overlap_days += len(days)
+        print(f"Total overlap: {total_overlap_days} jour(s)")
 
         print()
