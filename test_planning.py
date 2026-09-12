@@ -11,6 +11,10 @@ DAYS = {
     7: "Di",
 }
 
+RED = "\033[31m"
+ORANGE = "\033[38;5;208m"
+RESET = "\033[0m"
+
 MONTHS = {
     1: "Janvier",
     2: "Février",
@@ -73,6 +77,20 @@ class DR:
         return f"{date_repr(self.start)} - {date_repr(self.end)}"
 
 
+def in_holidays(d, holidays):
+    for _, dr in holidays:
+        if d in dr:
+            return True
+    return False
+
+
+WEEKEND_ISOWEEKDAYS = (5, 6, 7)  # Ve, Sa, Di
+
+
+def is_less_critical(d, holidays):
+    return in_holidays(d, holidays) and d.isoweekday() in WEEKEND_ISOWEEKDAYS
+
+
 class Scenario:
     def __init__(self, name):
         self.name = name
@@ -120,7 +138,8 @@ class Scenario:
                     return False
         return True
 
-    def check_constraints(self, constraints):
+    def check_constraints(self, constraints, holidays=None):
+        holidays = holidays or []
         incompatibilites = {}
         for who in constraints:
             assert who in self.people
@@ -129,7 +148,9 @@ class Scenario:
             for c in c_list:
                 days = self.overlap_days_list(who, c.dr)
                 if days:
-                    incompatibilites[who].append((c, days))
+                    days_moins_critique = [d for d in days if is_less_critical(d, holidays)]
+                    days_critique = [d for d in days if d not in days_moins_critique]
+                    incompatibilites[who].append((c, days_critique, days_moins_critique))
         return incompatibilites
 
     def __repr__(self):
@@ -215,6 +236,17 @@ def create_complex_scenario(name, simple_scenario_params):
 
 if __name__ == "__main__":
 
+    # Vacances scolaires zone B (années scolaires 2026-2027 et 2027-2028)
+    # source: calendrier officiel education.gouv.fr
+    VACANCES_ZONE_B = [
+        ("Noël 2026", DR("2026-12-19", "2027-01-03")),
+        ("Hiver 2027", DR("2027-02-20", "2027-03-07")),
+        ("Printemps 2027", DR("2027-04-17", "2027-05-02")),
+        ("Été 2027", DR("2027-07-03", "2027-08-31")),
+        ("Toussaint 2027", DR("2027-10-23", "2027-11-07")),
+        ("Noël 2027", DR("2027-12-18", "2028-01-02")),
+    ]
+
     # Dates où on sait qu'on ne pourra pas garder les enfants
     CONTRAINTES = {
         "C": [
@@ -280,16 +312,38 @@ if __name__ == "__main__":
         s.check_consistency()
         print()
 
-        incompatibilites = s.check_constraints(CONTRAINTES)
+        incompatibilites = s.check_constraints(CONTRAINTES, VACANCES_ZONE_B)
         print(
             f"Incompatibilités: B({len(incompatibilites['B'])}) C({len(incompatibilites['C'])})"
         )
         total_overlap_days = 0
+        total_overlap_days_moins_critique = 0
+        total_overlap_days_critique = 0
         for who, incompats in incompatibilites.items():
-            for incompat, days in incompats:
-                days_str = ", ".join(date_repr(d) for d in days)
-                print(f"{who}: {incompat} - overlap: {len(days)} jour(s) [{days_str}]")
-                total_overlap_days += len(days)
-        print(f"Total overlap: {total_overlap_days} jour(s)")
+            for incompat, days_critique, days_moins_critique in incompats:
+                all_days = sorted(days_critique + days_moins_critique)
+                days_str = ", ".join(
+                    f"{date_repr(d)}{' (peu critique)' if d in days_moins_critique else ''}"
+                    for d in all_days
+                )
+                nb_total = len(all_days)
+                nb_moins_critique = len(days_moins_critique)
+                nb_critique = len(days_critique)
+                critique = nb_critique > 0
+                couleur = RED if critique else ORANGE
+                print(
+                    f"{couleur}{who}: {incompat} - overlap: {nb_total} jours "
+                    f"dont {nb_critique} critiques, {nb_moins_critique} peu critiques "
+                    f" [{days_str}]{RESET}"
+                )
+                total_overlap_days += nb_total
+                total_overlap_days_moins_critique += nb_moins_critique
+                total_overlap_days_critique += nb_critique
+        total_couleur = RED if total_overlap_days_critique > 0 else ORANGE
+        print(
+            f"{total_couleur}Total overlap: {total_overlap_days} jours "
+            f"dont {total_overlap_days_critique} critiques, "
+            f"{total_overlap_days_moins_critique} peu critiques{RESET}"
+        )
 
         print()
