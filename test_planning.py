@@ -1,6 +1,6 @@
-from colors import RED, ORANGE, RESET
+from colors import RED, ORANGE, BLUE, RESET
 from date_utils import DR, date_repr
-from planning import Constraint, create_simple_scenario, scenario_repr
+from planning import Constraint, Evenement, create_simple_scenario, scenario_repr
 
 if __name__ == "__main__":
 
@@ -23,13 +23,7 @@ if __name__ == "__main__":
         "B": [
             Constraint("Urbest", "2027-01-13", "2027-01-14"),
             Constraint("Mobco Saint-Étienne", "2027-03-31", "2027-04-01"),
-            # Constraint("Bac blanc", "2027-04-05", "2027-04-09"),
-            Constraint("Lanzarote", "2027-04-24", "2027-05-01"),
             Constraint("UITP Hamburg", "2027-06-14", "2027-06-17"),
-            # Constraint("Bac français", "2027-06-15", "2027-06-15"),
-            # Constraint("Bac maths", "2027-06-21", "2027-06-21"),
-            # Constraint("Oral français", "2027-06-21", "2027-06-30"),
-            # Constraint("Brevet", "2027-06-24", "2027-06-28"),
             # Automne 2026 : dates pas encore communiquées
             # POLIS ?
             # RVM ?
@@ -37,6 +31,17 @@ if __name__ == "__main__":
             # Walk21 (Attention, j'essaierai de prendre 2 semaines)
         ],
     }
+
+    EVENEMENTS_ENFANTS = [
+        Evenement("Bac blanc Pauline", "2027-04-05", "2027-04-09"),
+        Evenement("Lanzarote Bertrand", "2027-04-24", "2027-05-01", "C"),
+        Evenement("Anniversaire Pauline", "2027-05-19"),
+        Evenement("Bac français Pauline", "2027-06-15", "2027-06-15"),
+        Evenement("Bac maths Pauline", "2027-06-21"),
+        Evenement("Oral français Pauline", "2027-06-21", "2027-06-30"),
+        Evenement("Brevet Axel", "2027-06-24", "2027-06-28"),
+        Evenement("Anniversaire Axel", "2027-07-16"),
+    ]
 
     # Divers scenarios de garde
     SCENARIOS = [
@@ -119,6 +124,22 @@ if __name__ == "__main__":
             f"{total_couleur}Total overlap: {total_overlap_days} jours "
             f"dont {total_overlap_days_critique} critiques, "
             f"{total_overlap_days_moins_critique} peu critiques{RESET}"
+        )
+        print()
+
+        print("Répartition des enfants pendant les événements:")
+        total_jours_evenements = {"B": 0, "C": 0}
+        for e in EVENEMENTS_ENFANTS:
+            jours_par_personne = s.days_in_range_by_people(e.dr)
+            suffix = f" (avec {e.who})" if e.who else ""
+            print(
+                f"{BLUE}{e.name}{RESET}{suffix} - {e.dr}: "
+                f"B({jours_par_personne['B']}) C({jours_par_personne['C']})"
+            )
+            total_jours_evenements["B"] += jours_par_personne["B"]
+            total_jours_evenements["C"] += jours_par_personne["C"]
+        print(
+            f"Total: B({total_jours_evenements['B']}) C({total_jours_evenements['C']})"
         )
 
         print()

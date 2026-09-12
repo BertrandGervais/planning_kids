@@ -29,6 +29,17 @@ class Constraint:
         return f"{self.name} - {self.dr}"
 
 
+class Evenement:
+    def __init__(self, name, start, end=None, who=None):
+        self.name = name
+        self.dr = DR(start, end if end is not None else start)
+        self.who = who
+
+    def __repr__(self):
+        suffix = f" (avec {self.who})" if self.who else ""
+        return f"{self.name}{suffix} - {self.dr}"
+
+
 class Scenario:
     def __init__(self, name):
         self.name = name
@@ -67,6 +78,9 @@ class Scenario:
                 if r is not None:
                     days.update(r.days_list())
         return sorted(days)
+
+    def days_in_range_by_people(self, dr):
+        return {who: len(self.overlap_days_list(who, dr)) for who in self.people}
 
     def check_consistency(self):
         for g in self.gardes:
