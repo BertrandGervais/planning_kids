@@ -82,6 +82,10 @@ class Scenario:
     def days_in_range_by_people(self, dr):
         return {who: len(self.overlap_days_list(who, dr)) for who in self.people}
 
+    def other_days_list(self, who, dr):
+        who_days = set(self.overlap_days_list(who, dr))
+        return [d for d in dr.days_list() if d not in who_days]
+
     def check_consistency(self):
         for g in self.gardes:
             for other_g in self.gardes:

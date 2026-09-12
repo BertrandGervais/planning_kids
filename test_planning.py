@@ -1,5 +1,5 @@
 from colors import RED, ORANGE, BLUE, RESET
-from date_utils import DR, date_repr
+from date_utils import DR, WEEKEND_ISOWEEKDAYS, date_repr
 from planning import Constraint, Evenement, create_simple_scenario, scenario_repr
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     EVENEMENTS_ENFANTS = [
         Evenement("Bac blanc Pauline", "2027-04-05", "2027-04-09"),
-        Evenement("Lanzarote Bertrand", "2027-04-24", "2027-05-01", "C"),
+        Evenement("Lanzarote Bertrand", "2027-04-24", "2027-05-01", "B"),
         Evenement("Anniversaire Pauline", "2027-05-19"),
         Evenement("Bac français Pauline", "2027-06-15", "2027-06-15"),
         Evenement("Bac maths Pauline", "2027-06-21"),
@@ -132,9 +132,19 @@ if __name__ == "__main__":
         for e in EVENEMENTS_ENFANTS:
             jours_par_personne = s.days_in_range_by_people(e.dr)
             suffix = f" (avec {e.who})" if e.who else ""
+            couleur = ""
+            if e.who:
+                autre_jours = s.other_days_list(e.who, e.dr)
+                jours_critique = [d for d in autre_jours if d.isoweekday() not in WEEKEND_ISOWEEKDAYS]
+                jours_moins_critique = [d for d in autre_jours if d.isoweekday() in WEEKEND_ISOWEEKDAYS]
+                if jours_critique:
+                    couleur = RED
+                elif jours_moins_critique:
+                    couleur = ORANGE
+            reset = RESET if couleur else ""
             print(
-                f"{BLUE}{e.name}{RESET}{suffix} - {e.dr}: "
-                f"B({jours_par_personne['B']}) C({jours_par_personne['C']})"
+                f"{BLUE}{e.name}{RESET}{couleur}{suffix} - {e.dr}: "
+                f"B({jours_par_personne['B']}) C({jours_par_personne['C']}){reset}"
             )
             total_jours_evenements["B"] += jours_par_personne["B"]
             total_jours_evenements["C"] += jours_par_personne["C"]
