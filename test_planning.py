@@ -1,5 +1,5 @@
-from colors import RED, ORANGE, BLUE, RESET
-from date_utils import DR, WEEKEND_ISOWEEKDAYS, date_repr
+from colors import RED, DARK_ORANGE, LIGHT_ORANGE, BLUE, RESET
+from date_utils import DR, WEEKEND_ISOWEEKDAYS, date_repr, max_consecutive_days
 from planning import Constraint, Evenement, create_simple_scenario, scenario_repr
 
 if __name__ == "__main__":
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         ],
         "B": [
             Constraint("Urbest", "2027-01-13", "2027-01-14"),
-            Constraint("Mobco Saint-Étienne", "2027-03-31", "2027-04-01"),
+            Constraint("Mobco Saint-Étienne (nécessaire de partir le 30 et peut-être le 2)", "2027-03-30", "2027-04-01"),
             Constraint("UITP Hamburg", "2027-06-14", "2027-06-17"),
             # Automne 2026 : dates pas encore communiquées
             # POLIS ?
@@ -97,8 +97,12 @@ if __name__ == "__main__":
             f"Incompatibilités: B({len(incompatibilites['B'])}) C({len(incompatibilites['C'])})"
         )
         total_overlap_days = 0
-        total_overlap_days_moins_critique = 0
-        total_overlap_days_critique = 0
+        total_jours_tres_critique = 0
+        total_jours_critique = 0
+        total_jours_peu_critique = 0
+        total_contraintes_tres_critique = 0
+        total_contraintes_critique = 0
+        total_contraintes_peu_critique = 0
         for who, incompats in incompatibilites.items():
             for incompat, days_critique, days_moins_critique in incompats:
                 all_days = sorted(days_critique + days_moins_critique)
@@ -109,21 +113,41 @@ if __name__ == "__main__":
                 nb_total = len(all_days)
                 nb_moins_critique = len(days_moins_critique)
                 nb_critique = len(days_critique)
-                critique = nb_critique > 0
-                couleur = RED if critique else ORANGE
+                tres_critique = max_consecutive_days(days_critique) > 2
+                if tres_critique:
+                    couleur = RED
+                    total_contraintes_tres_critique += 1
+                    total_jours_tres_critique += nb_critique
+                elif nb_critique > 0:
+                    couleur = DARK_ORANGE
+                    total_contraintes_critique += 1
+                    total_jours_critique += nb_critique
+                else:
+                    couleur = LIGHT_ORANGE
+                    total_contraintes_peu_critique += 1
+                total_jours_peu_critique += nb_moins_critique
                 print(
                     f"{couleur}{who}: {incompat} - overlap: {nb_total} jours "
                     f"dont {nb_critique} critiques, {nb_moins_critique} peu critiques "
+                    f"{'(plusieurs jours consécutifs, très critique) ' if tres_critique else ''}"
                     f" [{days_str}]{RESET}"
                 )
                 total_overlap_days += nb_total
-                total_overlap_days_moins_critique += nb_moins_critique
-                total_overlap_days_critique += nb_critique
-        total_couleur = RED if total_overlap_days_critique > 0 else ORANGE
+        if total_contraintes_tres_critique > 0:
+            total_couleur = RED
+        elif total_contraintes_critique > 0:
+            total_couleur = DARK_ORANGE
+        else:
+            total_couleur = LIGHT_ORANGE
         print(
             f"{total_couleur}Total overlap: {total_overlap_days} jours "
-            f"dont {total_overlap_days_critique} critiques, "
-            f"{total_overlap_days_moins_critique} peu critiques{RESET}"
+            f"dont {total_jours_tres_critique} très critiques, {total_jours_critique} critiques, "
+            f"{total_jours_peu_critique} peu critiques{RESET}"
+        )
+        print(
+            f"Contraintes: {total_contraintes_tres_critique} très critiques, "
+            f"{total_contraintes_critique} critiques, "
+            f"{total_contraintes_peu_critique} peu critiques"
         )
         print()
 
@@ -138,9 +162,9 @@ if __name__ == "__main__":
                 jours_critique = [d for d in autre_jours if d.isoweekday() not in WEEKEND_ISOWEEKDAYS]
                 jours_moins_critique = [d for d in autre_jours if d.isoweekday() in WEEKEND_ISOWEEKDAYS]
                 if jours_critique:
-                    couleur = RED
+                    couleur = DARK_ORANGE
                 elif jours_moins_critique:
-                    couleur = ORANGE
+                    couleur = LIGHT_ORANGE
             reset = RESET if couleur else ""
             print(
                 f"{BLUE}{e.name}{RESET}{couleur}{suffix} - {e.dr}: "

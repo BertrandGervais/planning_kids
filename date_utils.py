@@ -83,3 +83,17 @@ def in_holidays(d, holidays):
 
 def is_less_critical(d, holidays):
     return in_holidays(d, holidays) and d.isoweekday() in WEEKEND_ISOWEEKDAYS
+
+
+def max_consecutive_days(days):
+    if not days:
+        return 0
+    days = sorted(days)
+    max_run = current_run = 1
+    for prev, curr in zip(days, days[1:]):
+        if (curr - prev).days == 1:
+            current_run += 1
+            max_run = max(max_run, current_run)
+        else:
+            current_run = 1
+    return max_run
