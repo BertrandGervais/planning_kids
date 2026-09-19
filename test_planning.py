@@ -29,22 +29,22 @@ if __name__ == "__main__":
             # RVM ?
             # GeoDataDays ?
             # Walk21 (Attention, j'essaierai de prendre 2 semaines)
-            Constraint("UITP Hamburg", "2027-10-04", "2027-04-08"),
+            # Constraint("Walk21", "2027-10-04", "2027-10-08"),
         ],
     }
 
     EVENEMENTS_ENFANTS = [
         Evenement("Brevet blanc Axel", "2027-02-01", "2027-02-02"),
         Evenement("Bac blanc Pauline", "2027-04-05", "2027-04-09"),
-        Evenement("Oral blanc brevet Axel", "2027-04-07", "2027-04-07"),
+        Evenement("Oral blanc brevet Axel", "2027-04-07"),
         Evenement("Lanzarote Bertrand", "2027-04-24", "2027-05-01", "B"),
         Evenement("Anniversaire Pauline", "2027-05-19"),
-        Evenement("Oral brevet Axel", "2027-06-02", "2027-06-02"),
-        Evenement("Bac français Pauline", "2027-06-15", "2027-06-15"),
+        Evenement("Oral brevet Axel", "2027-06-02"),
+        Evenement("Bac français Pauline", "2027-06-15"),
         Evenement("Bac maths Pauline", "2027-06-21"),
         Evenement("Oral français Pauline", "2027-06-21", "2027-06-30"),
         Evenement("Brevet Axel / Partie 1", "2027-06-24", "2027-06-25"),
-        Evenement("Brevet Axel / Partie 2", "2027-06-28", "2027-06-28"),
+        Evenement("Brevet Axel / Partie 2", "2027-06-28"),
         Evenement("Anniversaire Axel", "2027-07-16"),
     ]
 
