@@ -23,7 +23,8 @@ if __name__ == "__main__":
         "B": [
             Constraint("Urbest", "2027-01-13", "2027-01-14"),
             Constraint("Mobco Saint-Étienne (nécessaire de partir le 30 et peut-être le 2)", "2027-03-30", "2027-04-01"),
-            Constraint("UITP Hamburg", "2027-06-14", "2027-06-17"),
+            Constraint("UITP Hamburg", "2027-06-14", "2027-06-17"), # nécessaire d'ajouter le déplacement...
+            Constraint("SOTM France / Rouen ?", "2027-06-24", "2027-06-26"), # le 25 en fait, mais en comptant le déplacement...
             # Automne 2026 : dates pas encore communiquées
             # POLIS ?
             # RVM ?
