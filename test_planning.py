@@ -25,6 +25,8 @@ if __name__ == "__main__":
             Constraint("Mobco Saint-Étienne (nécessaire de partir le 30 et peut-être le 2)", "2027-03-30", "2027-04-01"),
             Constraint("UITP Hamburg", "2027-06-14", "2027-06-17"), # nécessaire d'ajouter le déplacement...
             Constraint("SOTM France / Rouen ?", "2027-06-24", "2027-06-26"), # le 25 en fait, mais en comptant le déplacement...
+            Constraint("Journées AGIR / Toulouse ?", "2027-06-29", "2027-07-01"),
+            # Constraint("FOSS4G 2027 à Bristol ?", "2027-08-23", "2027-07-29"),
             # Automne 2026 : dates pas encore communiquées
             # POLIS ?
             # RVM ?
