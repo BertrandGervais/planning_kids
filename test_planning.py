@@ -38,6 +38,7 @@ if __name__ == "__main__":
 
     EVENEMENTS_ENFANTS = [
         Evenement("Brevet blanc Axel", "2027-02-01", "2027-02-02"),
+        Evenement("Stage Axel", "2027-02-03", "2027-02-05"),
         Evenement("Bac blanc Pauline", "2027-04-05", "2027-04-09"),
         Evenement("Oral blanc brevet Axel", "2027-04-07"),
         Evenement("Lanzarote Bertrand", "2027-04-24", "2027-05-01", "B"),
@@ -56,14 +57,14 @@ if __name__ == "__main__":
         create_simple_scenario(
             "S1 / Année commence par C (Scénario sans changement)",
             "2027-01-01",
-            "2027-12-17",
+            "2027-12-31",
             "C",
             "B",
         ),
         create_simple_scenario(
             "S2 / Année commence par B (Scénario alternatif)",
             "2027-01-01",
-            "2027-12-17",
+            "2027-12-31",
             "B",
             "C",
         ),
