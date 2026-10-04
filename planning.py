@@ -94,6 +94,19 @@ class Scenario:
                     return False
         return True
 
+    def constraint_days_by_people(self, constraints):
+        # nombre de jours distincts de contraintes par personne, sur la période du scénario
+        scenario_days = set()
+        for g in self.gardes:
+            scenario_days.update(g.dr.days_list())
+        result = {}
+        for who, c_list in constraints.items():
+            days = set()
+            for c in c_list:
+                days.update(d for d in c.dr.days_list() if d in scenario_days)
+            result[who] = len(days)
+        return result
+
     def check_constraints(self, constraints, holidays=None):
         holidays = holidays or []
         incompatibilites = {}

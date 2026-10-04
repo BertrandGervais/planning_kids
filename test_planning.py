@@ -101,6 +101,11 @@ if __name__ == "__main__":
         s.check_consistency()
         print()
 
+        jours_contraintes = s.constraint_days_by_people(CONTRAINTES)
+        print(
+            f"Jours de contraintes: B({jours_contraintes['B']}) C({jours_contraintes['C']})"
+        )
+
         incompatibilites = s.check_constraints(CONTRAINTES, VACANCES_ZONE_B)
         print(
             f"Incompatibilités: B({len(incompatibilites['B'])}) C({len(incompatibilites['C'])})"
